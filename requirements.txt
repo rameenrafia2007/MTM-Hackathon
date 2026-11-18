@@ -1,0 +1,9 @@
+# Core (the web UI uses Starlette, the toolkit FastAPI is built on)
+starlette
+uvicorn
+pydantic
+requests
+# Optional: only needed for LLM_PROVIDER=gemini
+google-genai
+# Tests
+pytest

@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MTM Planner · Mind to Machine Hackathon</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' fill='%23DCE21A'/%3E%3Cpath d='M12 2L15 9 22 12 15 15 12 22 9 15 2 12 9 9Z' fill='%23111'/%3E%3C/svg%3E">
+<style>
+:root{--yellow:#DCE21A;--sky:#A9CBEF;--blue:#1E6CC8;--tan:#E9A94B;--ink:#111;--paper:#FAFAF4;--green:#1E9E57;--red:#D93A3A;--sh:4px 4px 0 #111;--sh3:3px 3px 0 #111}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font:15px/1.45 system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background-image:radial-gradient(#e6e6d8 1px,transparent 1px);background-size:18px 18px}
+h1,h2,h3,.pix{font-family:"Arial Black","Segoe UI Black",Impact,system-ui,sans-serif;font-weight:900;letter-spacing:.01em;margin:0}
+h2{font-size:20px;text-transform:uppercase}
+h3{font-size:15px;text-transform:uppercase}
+.mono,pre,code,.trace{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace}
+button{font:inherit;color:inherit}
+header.top{display:flex;align-items:center;gap:16px;padding:10px 22px;background:#fff;border-bottom:2px solid var(--ink);flex-wrap:wrap}
+header.top .title{display:flex;flex-direction:column;line-height:1.1}
+header.top .title b{font-family:"Arial Black",Impact,system-ui,sans-serif;font-size:19px;text-transform:uppercase}
+header.top .title span{font-size:12px;opacity:.75}
+.org{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;text-align:right}
+.org img{height:30px}
+.layout{display:grid;grid-template-columns:225px minmax(0,1fr) 345px;gap:22px;padding:22px;align-items:start;max-width:1700px;margin:0 auto}
+nav.side{background:var(--sky);border:2px solid var(--ink);border-radius:12px;box-shadow:var(--sh);padding:10px;position:sticky;top:12px}
+nav.side button{display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:10px 12px;margin:3px 0;border:2px solid transparent;background:transparent;border-radius:8px;font-weight:900;cursor:pointer;transition:transform .12s}
+nav.side button:hover{transform:translateX(3px)}
+nav.side button.on{background:#fff;border-color:var(--ink);box-shadow:var(--sh3)}
+nav.side .count{margin-left:auto;font-size:11px;background:var(--ink);color:#fff;border-radius:10px;padding:1px 7px}
+nav.side .count.bad{background:var(--red)}
+.star{width:13px;height:13px;flex:none}
+.card{background:#fff;border:2px solid var(--ink);border-radius:12px;box-shadow:var(--sh);padding:16px 18px;margin-bottom:22px}
+.card>h2,.card>h3{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.grid2>.card{margin-bottom:0}
+.btn{background:var(--blue);color:#fff;border:2px solid var(--ink);border-radius:8px;padding:9px 16px;font-weight:900;box-shadow:var(--sh3);cursor:pointer;transition:transform .1s,box-shadow .1s}
+.btn:hover{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--ink)}
+.btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+.btn.alt{background:var(--yellow);color:var(--ink)}
+.btn.ghost{background:#fff;color:var(--ink)}
+.btn.sm{padding:5px 10px;font-size:13px}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.chip{white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:5px;border:2px solid var(--ink);border-radius:20px;padding:1px 9px;font-weight:900;font-size:12px;background:#fff}
+.chip.src{background:var(--sky);cursor:pointer;margin-left:6px;padding:0 7px;font-size:11px}
+.chip.src:hover{background:var(--yellow)}
+.chip.on{background:var(--yellow)}
+.chip.blue{background:var(--blue);color:#fff}
+.chip.tan{background:var(--tan)}
+.chip.yel{background:var(--yellow)}
+.badge{display:inline-block;padding:1px 9px;border:2px solid var(--ink);border-radius:20px;font-weight:900;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.b-used{background:var(--blue);color:#fff}.b-superseded{background:var(--tan)}.b-irrelevant{background:#e7e7e0}
+.b-rejected{background:var(--red);color:#fff}.b-pending{background:var(--yellow)}
+.pass{background:var(--green);color:#fff}.fail{background:var(--red);color:#fff}.warn{background:var(--tan)}
+.hero{background:var(--yellow);border:2px solid var(--ink);border-radius:14px;box-shadow:var(--sh);margin-bottom:22px;overflow:hidden;position:relative}
+.hero .in{display:grid;grid-template-columns:minmax(260px,420px) 1fr;gap:10px;align-items:center;padding:10px 20px}
+.hero svg.art{width:100%;height:auto;display:block}
+.hero h1{padding-right:120px;font-size:30px;text-transform:uppercase;line-height:1.05;margin-bottom:6px}
+.hero p{margin:0 0 12px;max-width:46ch}
+.hero .stats{display:flex;flex-wrap:wrap;gap:10px}
+.stat{background:#fff;border:2px solid var(--ink);border-radius:10px;box-shadow:var(--sh3);padding:6px 12px;min-width:108px}
+.stat small{display:block;font-size:11px;font-weight:900;text-transform:uppercase;opacity:.7}
+.stat b{font-size:19px;font-family:"Arial Black",Impact,system-ui,sans-serif}
+.hero .tog{position:absolute;right:12px;top:12px;z-index:2}
+.hero.shut .in{display:none}.hero.shut{padding:8px 14px}
+.hero .strip{display:none;font-weight:900;text-transform:uppercase}.hero.shut .strip{display:block}
+.fig{display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px dashed #cfcfc4}
+.fig:last-child{border-bottom:0}
+.fig .l{flex:0 0 146px;font-size:12px;font-weight:900;text-transform:uppercase;opacity:.7}
+.fig b{font-size:15px;flex:1;min-width:0}.fig .chip{align-self:center}
+.big{font-family:"Arial Black",Impact,system-ui,sans-serif;font-size:24px}
+table{border-collapse:collapse;width:100%}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid #d8d8cc;vertical-align:top;font-size:14px}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;background:#f3f3e6}
+td.n,th.n{text-align:right;white-space:nowrap}
+.assump li{margin:4px 0}
+.callout{border:2px solid var(--ink);border-radius:12px;box-shadow:var(--sh);padding:12px 16px;margin-bottom:22px;background:#fff}
+.callout.red{background:#FDECEC;border-color:var(--red);box-shadow:4px 4px 0 var(--red)}
+.callout.red h3{color:var(--red)}
+.err{background:var(--red);color:#fff;border:2px solid var(--ink);border-radius:10px;padding:10px 14px;margin-bottom:18px;font-weight:700}
+.check{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;padding:10px 0;border-bottom:1px dashed #cfcfc4}
+.check:last-child{border-bottom:0}
+.check .badge{min-width:54px;text-align:center}
+.check ul{margin:4px 0 0;padding-left:18px;font-size:13px;opacity:.85}
+.bar{position:relative;display:flex;height:40px;border:2px solid var(--ink);border-radius:8px;overflow:visible;background:repeating-linear-gradient(45deg,#fff,#fff 6px,#f1f1e6 6px,#f1f1e6 12px);margin:26px 0 12px}
+.bar .seg{height:100%;border-right:2px solid var(--ink);min-width:2px}
+.bar .seg:last-of-type{border-right:0}
+.bar .line{position:absolute;top:-14px;bottom:-14px;border-left:3px dashed var(--ink)}
+.bar .line span{position:absolute;top:-16px;left:-30px;font-size:11px;font-weight:900;background:var(--yellow);border:2px solid var(--ink);border-radius:6px;padding:0 4px;white-space:nowrap}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px}
+.legend i{display:inline-block;width:12px;height:12px;border:2px solid var(--ink);margin-right:5px;vertical-align:-2px}
+.tl{display:flex;height:64px;border:2px solid var(--ink);border-radius:8px;overflow:hidden;box-shadow:var(--sh3);margin:8px 0 10px}
+.tl .blk{display:flex;align-items:center;justify-content:center;border-right:2px solid var(--ink);font-size:11px;font-weight:900;overflow:hidden;text-align:center;padding:0 2px;line-height:1.1}
+.tl .blk:last-child{border-right:0}
+.t-setup{background:var(--sky)}.t-build{background:var(--blue);color:#fff}.t-break{background:var(--tan)}
+.t-meal{background:var(--yellow)}.t-judging{background:var(--ink);color:#fff}.t-closing{background:#7DB0E4}
+.t-buffer{background:#fff;border-style:dashed}.t-event{background:#f3c98a}
+.mini{height:26px;margin:6px 0}
+.judge{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:4px 0;border-bottom:1px dashed #cfcfc4}
+.judge b{min-width:70px}
+.tm{border:2px solid var(--ink);border-radius:6px;padding:0 6px;font-size:12px;font-weight:900;background:#fff}
+.drawer{position:sticky;top:12px}
+textarea{width:100%;min-height:104px;border:2px solid var(--ink);border-radius:8px;padding:10px;font:14px/1.4 ui-monospace,Menlo,Consolas,monospace;background:#fffef2;resize:vertical}
+textarea:focus,button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.muted{opacity:.7;font-size:13px}
+.ev{display:flex;gap:8px;align-items:flex-start;padding:6px 8px;border-bottom:1px solid #e1e1d6}
+.trace .code{padding:3px 10px;font-size:12.5px;border-left:4px solid var(--sky);margin:2px 0;background:#f6f8fc;word-break:break-word}
+.trace .rej{padding:7px 10px;font-size:13px;font-weight:900;border:2px solid var(--red);background:#FDECEC;color:#8c1d1d;border-radius:8px;margin:6px 0}
+.call{border:2px solid var(--ink);border-radius:10px;margin:10px 0;box-shadow:var(--sh3);background:#fff;overflow:hidden}
+.call .h{background:var(--yellow);padding:7px 12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-bottom:2px solid var(--ink)}
+.call .h .n{font-family:"Arial Black",Impact,sans-serif;font-size:17px}
+.call details{border-top:1px solid #d8d8cc}
+.call summary{cursor:pointer;padding:6px 12px;font-weight:900;font-size:13px}
+.call pre{margin:0;padding:8px 12px;max-height:340px;overflow:auto;white-space:pre-wrap;word-break:break-word;font-size:12px;background:#fafaf0}
+.foot{background:var(--ink);color:#fff;border-radius:8px;padding:10px 14px;font-weight:900;margin-top:10px}
+.runtabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.empty{text-align:center;padding:26px 10px}
+.empty svg{max-width:330px;width:80%}
+.loader{position:fixed;inset:0;background:rgba(250,250,244,.88);display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:50}
+.loader.on{display:flex}
+.loader .px{display:flex;gap:8px}
+.loader .px i{width:22px;height:22px;border:2px solid var(--ink);background:var(--blue);animation:hop .9s steps(6) infinite;box-shadow:2px 2px 0 var(--ink)}
+.loader .px i:nth-child(2){background:var(--yellow);animation-delay:.12s}.loader .px i:nth-child(3){background:var(--tan);animation-delay:.24s}
+.loader .px i:nth-child(4){background:var(--sky);animation-delay:.36s}.loader .px i:nth-child(5){background:var(--ink);animation-delay:.48s}
+@keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+.modal{position:fixed;inset:0;background:rgba(17,17,17,.55);display:none;align-items:center;justify-content:center;z-index:60;padding:18px}
+.modal.on{display:flex}
+.modal .box{background:#fff;border:2px solid var(--ink);border-radius:14px;box-shadow:6px 6px 0 var(--ink);max-width:640px;width:100%;max-height:88vh;overflow:auto;padding:18px}
+mark{background:var(--yellow);padding:0 2px;border-radius:3px}
+.slipbox{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.slipbox label{border:2px solid var(--ink);border-radius:8px;padding:8px 10px;font-weight:900;cursor:pointer;display:flex;gap:8px;align-items:center;background:#fff}
+.slipbox input{accent-color:var(--blue);width:18px;height:18px}
+.sponsors{max-width:1700px;margin:0 auto;padding:6px 22px 26px}
+.sponsors .strip{display:flex;flex-wrap:wrap;gap:12px;align-items:center;background:#fff;border:2px solid var(--ink);border-radius:12px;padding:10px 16px;box-shadow:var(--sh3)}
+.sponsors .strip b{text-transform:uppercase;font-size:12px;letter-spacing:.06em}
+.sponsors img{height:30px}
+.sponsor{border:2px solid var(--ink);border-radius:8px;padding:3px 10px;font-weight:900;font-size:13px;background:var(--paper);text-decoration:none;color:inherit}
+.fchips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.fchips .chip{cursor:pointer}
+tr.rej td{background:#FDECEC}
+tr.rej td:first-child{border-left:5px solid var(--red)}
+.printonly{display:none}
+@media print{body>*:not(.printonly){display:none!important}.printonly{display:block!important;padding:30px;font-family:system-ui,sans-serif}}
+@media(max-width:1180px){.layout{grid-template-columns:205px minmax(0,1fr)}.drawer{grid-column:1/-1;position:static}.hero .in{grid-template-columns:1fr}}
+@media(max-width:780px){.layout{grid-template-columns:1fr;padding:12px}nav.side{position:static;display:flex;overflow:auto;gap:4px}nav.side button{white-space:nowrap;width:auto}.grid2{grid-template-columns:1fr}.fig .l{flex-basis:110px}.slipbox{grid-template-columns:repeat(2,1fr)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <span id="logo"></span>
+  <div class="title"><b>MTM Planner · Mind to Machine Hackathon</b><span id="subtitle">Agent system: message pack in, validated 4-hour event plan out</span></div>
+  <div class="org" id="org"></div>
+</header>
+<div id="app"></div>
+<div class="sponsors" id="sponsors"></div>
+<div class="loader" id="loader"><div class="px"><i></i><i></i><i></i><i></i><i></i></div><b class="pix" id="loadmsg">Planning...</b></div>
+<div class="modal" id="modal"><div class="box" id="modalbox"></div></div>
+<div class="printonly" id="printslip"></div>
+
+<script>
+"use strict";
+const AREAS=["reading","venue","schedule","food","judging","budget"];
+const TABS=[["plan","Plan"],["checks","Checks"],["budget","Budget"],["schedule","Schedule"],["trace","Trace"],["ledger","Message Ledger"],["slip","Prediction Slip"],["export","Export"],["run","Run full pack"]];
+const STAR='<svg class="star" viewBox="0 0 24 24"><path d="M12 0L15 9 24 12 15 15 12 24 9 15 0 12 9 9Z" fill="#111"/></svg>';
+let D=null,BR={event_name:"Mind to Machine Hackathon",organizers:[],sponsors:[]};
+const U={tab:(location.hash.match(/tab=(\w+)/)||[])[1]||"plan",filter:"all",run:null,hero:true,busy:false,error:"",last:null,exportTxt:""};
+
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const rs=n=>(n==null||isNaN(n))?"n/a":"Rs "+Math.round(Number(n)).toLocaleString("en-US");
+const num=n=>n==null?"n/a":Number(n).toLocaleString("en-US");
+const $=id=>document.getElementById(id);
+const val=v=>v==null?"-":(typeof v==="object"?JSON.stringify(v):String(v));
+
+/* ---------- artwork (inline SVG, badge style: flat colour + 2px black outlines) ---------- */
+const GLYPH={M:["X...X","XX.XX","X.X.X","X...X","X...X"],T:["XXXXX","..X..","..X..","..X..","..X.."]};
+function wordmark(h){const cell=h/5,rows=[];let x=0;
+  for(const ch of "MTM"){GLYPH[ch].forEach((r,y)=>{[...r].forEach((c,i)=>{if(c==="X")rows.push(`<rect x="${(x+i)*cell}" y="${y*cell}" width="${cell+.6}" height="${cell+.6}"/>`)})});x+=6}
+  const w=(x-1)*cell;
+  return `<svg role="img" aria-label="MTM" width="${w+4}" height="${h+4}" viewBox="-2 -2 ${w+4} ${h+4}"><g fill="#DCE21A" transform="translate(3,3)">${rows.join("")}</g><g fill="#111">${rows.join("")}</g></svg>`}
+function student(o){const{x,y,hair,bottom,pose,glasses}=o,skin="#F6D2B3",ink="#111";
+  const arm=(sx,sy,hx,hy)=>`<path d="M${sx} ${sy}L${hx} ${hy}" stroke="${ink}" stroke-width="14" stroke-linecap="round"/><path d="M${sx} ${sy}L${hx} ${hy}" stroke="#fff" stroke-width="9" stroke-linecap="round"/><circle cx="${hx}" cy="${hy-3}" r="7" fill="${skin}" stroke="${ink}" stroke-width="2"/>`;
+  let arms="";
+  if(pose==="V")arms=arm(-22,40,-52,-16)+arm(22,40,52,-16);
+  else if(pose==="fistR")arms=arm(-22,40,-36,66)+arm(22,40,40,-22);
+  else arms=arm(-22,40,-40,-22)+arm(22,40,36,66);
+  const lower=bottom==="skirt"
+    ?`<path d="M-26 88L26 88L34 124L-34 124Z" fill="#2F82C6" stroke="${ink}" stroke-width="2"/><path d="M-10 90L-14 124M4 90L2 124M16 90L20 124" stroke="${ink}" stroke-width="1.5"/><rect x="-16" y="124" width="11" height="30" fill="${hair==="girl2"?"#222":skin}" stroke="${ink}" stroke-width="2"/><rect x="5" y="124" width="11" height="30" fill="${hair==="girl2"?"#222":skin}" stroke="${ink}" stroke-width="2"/>`
+    :`<path d="M-24 88L24 88L22 154L4 154L0 106L-4 154L-22 154Z" fill="#2F82C6" stroke="${ink}" stroke-width="2" stroke-linejoin="round"/>`;
+  const shoes=`<ellipse cx="-11" cy="158" rx="13" ry="6" fill="#fff" stroke="${ink}" stroke-width="2"/><ellipse cx="11" cy="158" rx="13" ry="6" fill="#fff" stroke="${ink}" stroke-width="2"/><path d="M-20 160h18M2 160h18" stroke="#2F82C6" stroke-width="3"/>`;
+  const hairSVG=hair==="boy"?`<path d="M-22 -4C-26 -30 26 -30 22 -4C14 -14 -10 -14 -22 -4Z" fill="${ink}"/>`
+    :`<path d="M-22 -2C-26 -30 26 -30 22 -2C12 -16 -8 -14 -22 -2Z" fill="${ink}"/><path d="M18 -14C40 -18 44 8 30 22C34 6 28 -6 18 -8Z" fill="${ink}"/>`;
+  const gl=glasses?`<circle cx="-8" cy="0" r="7" fill="none" stroke="${ink}" stroke-width="2"/><circle cx="8" cy="0" r="7" fill="none" stroke="${ink}" stroke-width="2"/><path d="M-1 0h2" stroke="${ink}" stroke-width="2"/>`:"";
+  return `<g transform="translate(${x},${y})">${lower}${shoes}<rect x="-24" y="30" width="48" height="60" rx="6" fill="#fff" stroke="${ink}" stroke-width="2"/><path d="M-24 36L-24 90L24 90L24 36L9 36L0 62L-9 36Z" fill="#E9A94B" stroke="${ink}" stroke-width="2" stroke-linejoin="round"/><path d="M-7 33L0 40L7 33L0 50Z" fill="#2F82C6" stroke="${ink}" stroke-width="1.6"/><rect x="-6" y="18" width="12" height="16" fill="${skin}" stroke="${ink}" stroke-width="2"/>${arms}<circle r="21" fill="${skin}" stroke="${ink}" stroke-width="2"/>${hairSVG}<ellipse cx="-8" cy="-1" rx="2.4" ry="3" fill="${ink}"/><ellipse cx="8" cy="-1" rx="2.4" ry="3" fill="${ink}"/>${gl}<path d="M-7 8Q0 17 7 8Z" fill="#fff" stroke="${ink}" stroke-width="2" stroke-linejoin="round"/></g>`}
+function brain(){const g="#1F6B3F";
+  return `<g stroke="${g}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"><path fill="#F0F27C" d="M151 120C128 100 132 70 158 62C160 36 196 22 222 36C242 16 282 16 299 36C330 26 366 44 362 76C388 88 384 124 356 134C360 158 330 172 306 164C288 182 252 180 240 164C214 176 180 168 176 146C160 146 148 134 151 120Z"/><path d="M258 38C250 62 270 78 258 100C250 118 266 134 256 164"/><path d="M168 80C190 70 201 92 222 82M176 114C196 102 214 120 236 108M201 50C206 64 222 58 230 72M286 54C299 68 320 58 338 74M282 92C304 86 322 102 346 96M286 130C306 122 322 136 342 128"/><path fill="#F0F27C" d="M298 166C304 192 346 196 352 172C338 162 314 160 298 166Z"/><path d="M306 176h36M310 184h30"/><path fill="#F0F27C" d="M252 168C252 186 256 198 260 208L274 206C270 192 270 180 272 170"/></g>`}
+function heroSVG(){return `<svg class="art" viewBox="0 0 520 390" role="img" aria-label="A brain above three cheering students"><g transform="translate(15,0) scale(.97)">${brain()}</g><ellipse cx="260" cy="372" rx="215" ry="9" fill="#111" opacity=".15"/>${student({x:112,y:226,hair:"boy",bottom:"trousers",pose:"fistR"})}${student({x:262,y:206,hair:"girl",bottom:"skirt",pose:"V"})}${student({x:412,y:230,hair:"girl2",bottom:"skirt",pose:"fistL",glasses:1})}</svg>`}
+
+/* ---------- plumbing ---------- */
+async function api(path,opts){const r=await fetch(path,opts);let j=null;try{j=await r.json()}catch(e){};return{ok:r.ok,status:r.status,json:j,res:r}}
+async function load(){const r=await api("/api/state");if(r.json){D=r.json;const runs=(D.state&&D.state.runs)||[];if(runs.length&&(U.run==null||U.run>runs.length))U.run=runs.length}render()}
+async function boot(){try{const b=await api("/branding.json");if(b.json)BR=b.json}catch(e){}
+  $("org").innerHTML=(BR.organizers||[]).map(o=>o.logo?`<img src="${esc(o.logo)}" alt="${esc(o.name)}" onerror="this.outerHTML='${esc(o.name).replace(/'/g,"")}'">`:`<span>${esc(o.name)}</span>`).join('<span style="opacity:.4">·</span>');
+  const lg=$("logo");lg.innerHTML=wordmark(30);
+  const im=new Image();im.onload=()=>{lg.innerHTML='<img src="/assets/mtm-logo.png" alt="MTM" height="34">'};im.src="/assets/mtm-logo.png";
+  const sp=BR.sponsors||[];
+  $("sponsors").innerHTML=sp.length?`<div class="strip"><b>Powered by</b>${sp.map(s=>{const inner=s.logo?`<img src="${esc(s.logo)}" alt="${esc(s.name)}" onerror="this.replaceWith(document.createTextNode('${esc(s.name).replace(/'/g,"")}'))">`:esc(s.name);return s.url?`<a class="sponsor" href="${esc(s.url)}" target="_blank" rel="noopener" title="${esc(s.role||"")}">${inner}</a>`:`<span class="sponsor" title="${esc(s.role||"")}">${inner}</span>`}).join("")}</div>`:"";
+  await load()}
+
+const S=()=>D&&D.state;
+function chips(ids){return(ids||[]).map(i=>`<button class="chip src" data-msg="${i}" title="Open the source message">msg ${i}</button>`).join("")}
+function src(k){const s=S();return chips(s&&s.plan&&s.plan.src&&s.plan.src[k])}
+function fig(l,v,k){return `<div class="fig"><span class="l">${esc(l)}</span><b>${v}</b>${k?src(k):""}</div>`}
+function stat(l,v){return `<div class="stat"><small>${esc(l)}</small><b>${v}</b></div>`}
+
+/* ---------- views ---------- */
+function viewEmpty(){return `<div class="card empty"><div>${heroSVG()}</div><h2>Drop in a message pack to plan the event</h2><p class="muted">Paste the pack (emails, WhatsApp texts, notices - English or Roman Urdu) and the agent plans venue, schedule, food, judging and budget.<br>Same engine as <code>python main.py &lt;file&gt;</code>.</p><button class="btn alt" data-tab="run">Run a full pack</button></div>`}
+
+function viewPlan(){const s=S(),p=s.plan,v=s.validation||{},h=p.headcount||{},ven=p.venue||{},bud=p.budget||{};
+  const rej=(s.ledger||[]).filter(e=>e.status==="rejected");
+  const hero=`<div class="hero ${U.hero?"":"shut"}"><button class="btn sm ghost tog" data-act="hero">${U.hero?"Hide banner":"Show banner"}</button><div class="strip">MTM Planner · ${v.six_pass||0}/${v.total_checks||6} checks pass</div><div class="in"><div>${heroSVG()}</div><div><h1>Mind to Machine<br>Event Plan</h1><p>${v.valid?"Validated plan from the message pack. Every figure links to the message it came from.":"The plan is NOT valid. See the Checks tab for the failing rule."}</p><div class="stats">${stat("Headcount",num(h.total))}${stat("Venue",esc(ven.name||"none"))}${stat("Total cost",rs(bud.total))}${stat("Headroom",rs(bud.headroom))}${stat("Checks",`${v.six_pass||0}/${v.total_checks||6}`)}</div></div></div></div>`;
+  const rejBox=rej.length?`<div class="callout red"><h3>${rej.length} message${rej.length>1?"s":""} rejected - plan kept valid</h3>${rej.map(e=>`<div class="ev"><span class="badge b-rejected">msg ${e.id}</span><div><b>${esc(e.sender||"?")}</b>: ${esc(e.reason)}</div></div>`).join("")}</div>`:"";
+  const errBox=(p.errors&&p.errors.length)?`<div class="err">Plan problems: ${esc(p.errors.join(" | "))}</div>`:"";
+  const jud=p.judging||{},food=p.food||{},sch=p.schedule||{};
+  const venCard=`<div class="card"><h2>${STAR}Venue</h2><div class="big">${esc(ven.name||"No hall fits")}</div>${fig("Seats",num(ven.capacity),"venue.capacity")}${fig("Quoted price",rs(ven.price)+(ven.unit==="hour"?" per hour":""),"venue.price")}${ven.hours&&ven.unit==="hour"?fig("Hours charged",ven.hours+" h"):""}${ven.overtime?fig("Overtime",rs(ven.overtime)):""}${ven.tax?fig("Tax / service",rs(ven.tax)):""}${fig("Venue cost",rs(ven.total),"venue.total")}${fig("Features",(ven.features||[]).map(f=>`<span class="chip">${esc(f.replace("_"," "))}</span>`).join(" ")||"none stated","venue.features")}${fig("Spare seats",num(ven.seats_spare))}<details><summary class="muted">Halls considered</summary><table><tr><th>Hall</th><th class="n">Seats</th><th class="n">Cost</th><th>Verdict</th></tr>${(ven.alternatives||[]).map(a=>`<tr><td>${esc(a.name)}</td><td class="n">${num(a.capacity)}</td><td class="n">${rs(a.total||a.price)}</td><td>${a.ok?(a.name===ven.name?'<span class="badge pass">chosen</span>':'<span class="badge b-superseded">dearer</span>'):'<span class="badge fail">out</span> '+esc((a.reasons||[]).join("; "))}</td></tr>`).join("")}</table></details></div>`;
+  const schedCard=`<div class="card"><h2>${STAR}Schedule</h2>${timeline(sch,true)}${fig("Duration",(sch.duration||0)+" min"+(sch.start_clock?` from ${esc(sch.start_clock)}`:""),"schedule.duration")}${fig("Blocks",(sch.blocks||[]).filter(b=>b.type!=="buffer").length)}${sch.judging_window?fig("Judging window",`${sch.judging_window.start}-${sch.judging_window.end} min (${sch.judging_window.rounds} rounds x ${sch.judging_window.minutes_per_team} min + ${sch.judging_window.gap} min gap)`,"schedule.judging_window"):""}${sch.defaults?`<p class="muted">Defaults: setup ${sch.defaults.setup}, meal ${sch.defaults.meal}, closing ${sch.defaults.closing} min.</p>`:""}<button class="btn sm ghost" data-tab="schedule">Full timeline + judge table</button></div>`;
+  const foodCard=`<div class="card"><h2>${STAR}Food</h2><div class="big">${esc(food.tier||"none")} x ${num(food.quantity)}</div>${fig("Price per head",rs(food.unit_price),"food.unit_price")}${fig("Meals ordered",`${num(food.quantity)} (headcount ${num(food.headcount)})`,"food.quantity")}${food.tax?fig("Tax / service",rs(food.tax)):""}${food.delivery?fig("Delivery",rs(food.delivery)):""}${(food.shares||[]).map(x=>fig(x.diet+" meals",`${x.count} (min ${x.pct}%)`)).join("")}${fig("Food cost",rs(food.total),"food.total")}<details><summary class="muted">Tiers considered</summary><table><tr><th>Tier</th><th class="n">Per head</th><th class="n">Total</th><th>Verdict</th></tr>${(food.alternatives||[]).map(a=>`<tr><td>${esc(a.tier)}</td><td class="n">${rs(a.price)}</td><td class="n">${rs(a.total)}</td><td>${esc(a.status)} ${esc((a.reasons||[]).join("; "))}</td></tr>`).join("")}</table></details></div>`;
+  const judCard=`<div class="card"><h2>${STAR}Judging</h2><div class="big">${num(jud.judges_used)} judges for ${num(jud.teams)} teams</div>${fig("Teams",`${num(jud.teams)} (${num(jud.students)} students / ${num(jud.team_size)} per team)`,"judging.teams")}${fig("Judges needed",`${num(jud.judges_needed)} (max ${num(jud.max_teams_per_judge)} teams each)`,"judging.judges_needed")}${fig("Judges confirmed",num(jud.judges_confirmed),"judging.judges_confirmed")}${fig("Time per team",(jud.minutes_per_team||0)+" min x "+(jud.rounds||0)+" rounds","judging.minutes_per_team")}${fig("Honoraria",`${rs(jud.honorarium)} (${num(jud.judges_used)} x ${rs(jud.fee)})`,"judging.honorarium")}</div>`;
+  const budCard=`<div class="card"><h2>${STAR}Budget</h2><div class="big">${rs(bud.total)} <span class="muted">of ${rs(bud.total_budget)}</span></div>${fig("Headroom",rs(bud.headroom),"budget.headroom")}${(bud.lines||[]).map(l=>`<div class="fig"><span class="l" style="flex-basis:220px;text-transform:none;opacity:1">${esc(l.label)}</span><b>${rs(l.amount)}</b>${chips(l.src)}</div>`).join("")}${(bud.pending||[]).map(x=>`<div class="fig"><span class="l" style="flex-basis:220px;text-transform:none">Pending: ${esc(x.item)}</span><b>${rs(x.amount)}</b><span class="badge ${x.fits?"b-pending":"b-rejected"}">${x.fits?"would fit":"would not fit"}</span>${chips(x.src)}</div>`).join("")}</div>`;
+  const ass=(p.assumptions||[]).length?`<div class="card"><h3>${STAR}Stated assumptions</h3><ul class="assump">${p.assumptions.map(a=>`<li>${esc(a)}</li>`).join("")}</ul></div>`:"";
+  return hero+rejBox+errBox+`<div class="grid2">${venCard}${schedCard}${foodCard}${judCard}</div><div style="height:22px"></div>${budCard}${ass}`}
+
+function timeline(sch,mini){const b=sch.blocks||[];if(!b.length)return '<p class="muted">No schedule.</p>';
+  return `<div class="tl ${mini?"mini":""}">${b.map(x=>`<div class="blk t-${x.type}" style="flex:${x.minutes} 1 0" title="${esc(x.name)}: ${x.minutes} min (${x.start}-${x.end})${x.clock_start?` · ${x.clock_start}-${x.clock_end}`:""}">${!mini&&x.minutes>=12?esc(x.name.replace("Build time","Build"))+"<br>"+x.minutes+"m":""}</div>`).join("")}</div>`}
+
+function viewChecks(){const v=S().validation||{};
+  const row=(pass,name,detail,subs)=>`<div class="check"><span class="badge ${pass?"pass":"fail"}">${pass?"PASS":"FAIL"}</span><div><b>${esc(name)}</b><div>${esc(detail)}</div>${subs&&subs.length>1?`<ul>${subs.map(x=>`<li>${x.ok?"&#10003;":"&#10007;"} ${esc(x.detail)}</li>`).join("")}</ul>`:""}</div></div>`;
+  return `<div class="card"><h2>${STAR}The six scored checks <span class="chip ${v.six_pass===6?"pass":"fail"}">${v.six_pass||0}/${v.total_checks||6}</span></h2>${(v.checks||[]).map(c=>row(c.pass,`${c.id}. ${c.name}`,c.detail,c.subs)).join("")}</div>
+  <div class="card"><h3>${STAR}Invariants</h3>${(v.invariants||[]).map(i=>row(i.ok,i.name,i.detail)).join("")||'<p class="muted">none</p>'}</div>
+  <div class="card"><h3>${STAR}Stated constraints</h3>${(v.constraints||[]).map(c=>`<div class="check"><span class="badge ${c.status==="PASS"?"pass":c.status==="FAIL"?"fail":"warn"}">${c.status}</span><div><b>${esc(c.metric)}${c.subj?" ["+esc(c.subj)+"]":""}</b> ${chips(c.src?[c.src]:[])}<div>${esc(c.detail)}</div></div></div>`).join("")||'<p class="muted">No extra constraints in this pack.</p>'}</div>
+  ${(v.failures||[]).length?`<div class="callout red"><h3>Failing</h3>${v.failures.map(f=>`<div>${esc(f)}</div>`).join("")}</div>`:""}`}
+
+const PAL=["#1E6CC8","#E9A94B","#DCE21A","#A9CBEF","#111111","#7DB0E4","#F3C98A","#5A8FD0"];
+function viewBudget(){const b=S().plan.budget||{};if(b.total==null)return '<div class="card"><p>No budget computed.</p></div>';
+  const scale=Math.max(b.total,b.total_budget);
+  const segs=(b.lines||[]).map((l,i)=>`<div class="seg" style="width:${l.amount/scale*100}%;background:${PAL[i%PAL.length]}" title="${esc(l.label)}: ${rs(l.amount)}"></div>`).join("");
+  const cat=b.by_category||{};
+  return `<div class="card"><h2>${STAR}Budget vs the budget line</h2><div class="bar">${segs}<div class="line" style="left:${b.total_budget/scale*100}%"><span>Budget ${rs(b.total_budget)}</span></div></div>
+  <div class="legend">${(b.lines||[]).map((l,i)=>`<span><i style="background:${PAL[i%PAL.length]}"></i>${esc(l.label)} ${rs(l.amount)}</span>`).join("")}</div>
+  <div class="row" style="margin-top:14px"><span class="chip ${b.headroom>=0?"pass":"fail"}">${b.headroom>=0?"Headroom "+rs(b.headroom):"Over budget by "+rs(-b.headroom)}</span><span class="chip">Total ${rs(b.total)}</span><span class="chip">Budget ${rs(b.total_budget)}</span></div></div>
+  <div class="card"><h3>${STAR}Per category</h3><table><tr><th>Category</th><th class="n">Amount</th><th class="n">Share of budget</th></tr>${Object.entries(cat).map(([k,v])=>`<tr><td>${esc(k)}</td><td class="n">${rs(v)}</td><td class="n">${(v/b.total_budget*100).toFixed(1)}%</td></tr>`).join("")}</table></div>
+  <div class="card"><h3>${STAR}Line items (with sources)</h3><table><tr><th>Line</th><th class="n">Amount</th><th>Source</th></tr>${(b.lines||[]).map(l=>`<tr><td>${esc(l.label)}</td><td class="n">${rs(l.amount)}</td><td>${chips(l.src)}</td></tr>`).join("")}</table>${(b.deposits||[]).map(d=>`<p class="muted">Cash timing: ${esc(d.label)} = ${rs(d.amount)} (inside the totals above)</p>`).join("")}</div>
+  <div class="card"><h3>${STAR}Pending requests (never in totals)</h3>${(b.pending||[]).length?`<table><tr><th>Request</th><th class="n">Amount</th><th>Headroom check</th><th>From</th></tr>${b.pending.map(x=>`<tr><td>${esc(x.item)} ${chips(x.src)}</td><td class="n">${rs(x.amount)}</td><td><span class="badge ${x.fits?"b-pending":"b-rejected"}">${x.fits?"would fit":"would not fit"}</span> leaves ${rs(x.headroom_after)}</td><td>${esc(x.sender||"")}</td></tr>`).join("")}</table>`:'<p class="muted">No pending requests.</p>'}</div>`}
+
+function viewSchedule(){const p=S().plan,sch=p.schedule||{},j=p.judging||{};
+  const leg=[["setup","Setup"],["build","Build"],["break","Prayer / break"],["meal","Meal"],["judging","Judging"],["closing","Closing"],["buffer","Buffer"],["event","Fixed event"]];
+  return `<div class="card"><h2>${STAR}Timeline (${sch.duration||0} min${sch.start_clock?`, starts ${esc(sch.start_clock)}`:""})</h2>${timeline(sch,false)}<div class="legend">${leg.map(([t,n])=>`<span><i class="t-${t}"></i>${n}</span>`).join("")}</div>
+  <table style="margin-top:12px"><tr><th>#</th><th>Block</th><th class="n">Minutes</th><th class="n">From-to (min)</th>${sch.start_clock?"<th>Clock</th>":""}</tr>${(sch.blocks||[]).map((b,i)=>`<tr><td>${i+1}</td><td><span class="chip" style="background:none"><i class="t-${b.type}" style="width:12px;height:12px;display:inline-block;border:2px solid #111"></i> ${esc(b.name)}</span></td><td class="n">${b.minutes}</td><td class="n">${b.start}-${b.end}</td>${sch.start_clock?`<td>${b.clock_start||""}-${b.clock_end||""}</td>`:""}</tr>`).join("")}<tr><th></th><th>Total</th><th class="n">${sch.total||0}</th><th></th>${sch.start_clock?"<th></th>":""}</tr></table></div>
+  <div class="card"><h2>${STAR}Judge to team table</h2><p class="muted">${num(j.judges_used)} judges, at most ${num(j.max_teams_per_judge)} teams each, ${num(j.minutes_per_team)} min per team.</p>${(j.table||[]).map(r=>`<div class="judge"><b>Judge ${r.judge}</b>${r.teams.map(t=>`<span class="tm">T${t}</span>`).join("")}<span class="muted">${r.teams.length} team${r.teams.length>1?"s":""}</span></div>`).join("")}</div>`}
+
+function viewTrace(){const runs=S().runs||[];if(!runs.length)return '<div class="card"><p>No runs yet.</p></div>';
+  const r=runs[(U.run||runs.length)-1],tr=r.trace;
+  const tabs=`<div class="runtabs">${runs.map((x,i)=>`<button class="chip ${i+1===U.run?"on":""}" data-run="${i+1}">Run ${x.id} · ${esc(x.label)}${x.error?" · failed":""}</button>`).join("")}</div>`;
+  const evs=(tr.events||[]).map(e=>{
+    if(e.type==="code")return `<div class="code">[CODE] ${esc(e.text)} <span style="opacity:.55">(0 tokens)</span></div>`;
+    if(e.type==="rejected")return `<div class="rej">${esc(e.text)}</div>`;
+    const t=e.tokens,f=x=>x==null?"not reported":num(x);
+    return `<div class="call"><div class="h"><span class="n">CALL ${e.n}</span><span class="chip blue">${esc(e.area)}</span><span class="chip">${esc(e.model)}${e.model_reported?"":" (requested)"}</span><span class="chip ${e.small?"pass":"fail"}">small-model: ${e.small?"yes":"no"}</span><span class="chip">in ${f(t.input)}</span><span class="chip">out ${f(t.output)}</span><span class="chip yel">total ${f(t.total)}</span>${e.thinking?`<span class="chip">thinking ${e.thinking}</span>`:""}</div><details><summary>Input (full)</summary><pre>${esc(e.input)}</pre></details><details><summary>Output (full)</summary><pre>${esc(e.output)}</pre></details></div>`}).join("");
+  const T=tr.totals;
+  return `<div class="card"><h2>${STAR}Trace</h2>${tabs}<div class="row" style="margin-bottom:8px"><span class="chip">${esc(r.label)} · ${r.seconds}s</span><span class="chip">areas with model calls: ${esc((tr.areas||[]).join(", ")||"none")}</span><span class="chip">affected: ${esc((r.affected||[]).join(", ")||"none")}</span><button class="btn sm alt" data-act="copytrace">Copy trace</button></div><div class="trace">${evs}</div><div class="foot mono">TOTAL TOKENS: ${num(T.total_tokens)}${T.unreported_calls?` (+${T.unreported_calls} call(s) not reported)`:""} &nbsp;|&nbsp; MODEL CALLS: ${T.calls}${T.limit?` (limit ${T.limit})`:""}</div></div>`}
+
+function viewLedger(){const L=S().ledger||[];const cnt=k=>L.filter(e=>k==="all"||e.status===k).length;
+  const fl=["all","used","superseded","irrelevant","rejected","pending"];
+  const rows=L.filter(e=>U.filter==="all"||e.status===U.filter);
+  return `<div class="card"><h2>${STAR}Message ledger</h2><div class="fchips">${fl.map(k=>`<button class="chip ${U.filter===k?"on":""}" data-filter="${k}">${k} (${cnt(k)})</button>`).join("")}</div>
+  <table><tr><th>#</th><th>From</th><th>Date</th><th>Status</th><th>Why</th></tr>${rows.map(e=>`<tr class="${e.status==="rejected"?"rej":""}"><td><button class="chip src" data-msg="${e.id}" style="margin:0">msg ${e.id}</button></td><td>${esc(e.sender||"?")}</td><td>${esc(e.date||"")}</td><td><span class="badge b-${e.status}">${e.status}</span></td><td>${e.status==="rejected"?'<b style="color:#8c1d1d">[REJECTED] msg '+e.id+':</b> ':""}${esc(e.reason)}<div class="muted" style="margin-top:3px">${esc(e.text.length>199?e.text.slice(0,199)+"...":e.text)}</div></td></tr>`).join("")||'<tr><td colspan="5" class="muted">No messages with this status.</td></tr>'}</table></div>`}
+
+function viewSlip(){const slips=D.slips||[];const open=slips.find(s=>s.status==="locked");
+  return `<div class="card"><h2>${STAR}Prediction slip</h2><p>Before an update, tick the areas you expect to make <b>model calls</b>, then lock. After the next run the app shows MATCH or MISMATCH. A locked slip cannot be edited.</p>
+  <div class="slipbox">${AREAS.map(a=>`<label><input type="checkbox" class="slipchk" value="${a}" ${open?"disabled":""} ${open&&open.areas.includes(a)?"checked":""}> ${a}</label>`).join("")}</div>
+  <div class="row"><button class="btn alt" data-act="lock" ${open?"disabled":""}>${open?"Locked - waiting for the next run":"Lock prediction"}</button><span class="muted">Tip: reading always calls the model; other areas only if a new kind of rule appears.</span></div></div>
+  <div class="card"><h3>${STAR}Slips</h3>${slips.length?slips.slice().reverse().map(s=>`<div class="check"><span class="badge ${s.status==="locked"?"warn":s.match?"pass":"fail"}">${s.status==="locked"?"LOCKED":s.match?"MATCH":"MISMATCH"}</span><div><b>Slip #${s.id}</b> locked ${esc(s.locked_at)}<div>Predicted: ${esc(s.areas.join(", ")||"no model calls")}${s.status==="resolved"?`<br>Actual (run ${s.run_id}): ${esc(s.actual.join(", ")||"no model calls")}`:""}</div><button class="btn sm ghost" data-print="${s.id}">Print slip</button></div></div>`).join(""):'<p class="muted">No slips yet.</p>'}</div>`}
+
+function viewExport(){return `<div class="card"><h2>${STAR}Export</h2><p>The text file is the same content as <code>output/final_plan_and_trace.txt</code> (plan, ledger and the full trace of every run since the last full run). Upload that file on the form.</p><div class="row"><a class="btn" href="/api/export?fmt=txt" download>Download .txt</a><a class="btn alt" href="/api/export?fmt=json" download>Download .json</a><button class="btn ghost" data-act="copyexport">Copy text</button></div></div><div class="card"><h3>${STAR}Preview</h3><pre style="max-height:520px;overflow:auto;white-space:pre-wrap;font-size:12px">${esc(U.exportTxt||"loading...")}</pre></div>`}
+
+function viewRun(){return `<div class="card"><h2>${STAR}Run a full pack</h2><p>Paste the whole pack or choose the text file. This runs the exact same engine as <code>python main.py file.txt</code>: more than 3 messages (or no saved state) starts a <b>fresh full run</b>; 3 or fewer with saved state is an <b>update</b>.</p><input type="file" id="packfile" accept=".txt,.json,.csv,.tsv,text/*"><textarea id="packtext" style="min-height:240px;margin-top:10px" placeholder="Paste the message pack here..."></textarea><div class="row" style="margin-top:12px"><button class="btn" data-act="runpack">Run full pack</button><button class="btn ghost" data-act="reset">Reset saved state</button></div></div>`}
+
+function drawer(){const s=S(),run=s&&s.runs&&s.runs[s.runs.length-1],last=U.last;
+  let res="";
+  if(U.error)res+=`<div class="err">${esc(U.error)}</div>`;
+  if(run){const rej=run.rejected||[];
+    res+=`<div class="card" style="box-shadow:var(--sh3);margin:14px 0 0"><h3>${STAR}Last run: ${esc(run.label)} #${run.id}</h3><div class="row" style="margin:8px 0"><span class="chip ${run.valid?"pass":"fail"}">${run.valid?"plan valid":"plan NOT valid"}</span><span class="chip">${run.trace.totals.calls} call${run.trace.totals.calls===1?"":"s"}${run.trace.totals.limit?" / "+run.trace.totals.limit:""}</span><span class="chip">${num(run.trace.totals.total_tokens)} tokens</span></div>
+    ${run.error?`<div class="err">${esc(run.error)}</div>`:""}
+    ${rej.map(r=>`<div class="rej" style="border:2px solid var(--red);background:#FDECEC;border-radius:8px;padding:6px 8px;margin:6px 0;font-size:13px"><b>[REJECTED] msg ${r.id}:</b> ${esc(r.reason)}</div>`).join("")}
+    <div class="muted" style="margin-top:6px">Affected areas</div><div class="row">${(run.affected||[]).map(a=>`<span class="chip tan">${a}</span>`).join("")||'<span class="muted">none</span>'}</div>
+    <div class="muted" style="margin-top:6px">Areas that made model calls</div><div class="row">${(run.model_areas||[]).map(a=>`<span class="chip blue">${a}</span>`).join("")||'<span class="muted">none</span>'}</div>
+    ${run.mode==="update"?`<div class="muted" style="margin-top:8px">Plan diff (before &rarr; after)</div>${(run.diff||[]).length?`<table>${run.diff.map(d=>`<tr><td><span class="chip tan">${esc(d.area)}</span></td><td style="font-size:12px">${esc(d.path.replace(/^[a-z]+\./,""))}<br><s>${esc(val(d.before))}</s> &rarr; <b>${esc(val(d.after))}</b></td></tr>`).join("")}</table>`:'<p class="muted">No figure changed.</p>'}`:""}
+    </div>`}
+  return `<aside class="drawer"><div class="card"><h2>${STAR}Update panel</h2><p class="muted">Paste a new message. Only affected areas are recomputed; a wrong message is rejected with the reason.</p><textarea id="upd" placeholder="e.g. a message from finance, the caterer, the dean..."></textarea><div class="row" style="margin-top:10px"><button class="btn" data-act="update" ${U.busy?"disabled":""}>Run update</button><button class="btn sm ghost" data-tab="slip">Prediction slip</button></div>${res}</div></aside>`}
+
+function sideNav(){const s=S(),rej=s?(s.ledger||[]).filter(e=>e.status==="rejected").length:0;
+  return `<nav class="side" aria-label="Sections">${TABS.map(([k,n])=>`<button data-tab="${k}" class="${U.tab===k?"on":""}">${STAR}${n}${k==="ledger"&&rej?`<span class="count bad">${rej} rejected</span>`:""}${k==="checks"&&s&&s.validation?`<span class="count ${s.validation.valid?"":"bad"}">${s.validation.six_pass}/${s.validation.total_checks}</span>`:""}</button>`).join("")}</nav>`}
+
+function render(){const s=S();let main;
+  const needs=["plan","checks","budget","schedule","trace","ledger"].includes(U.tab);
+  if(!s&&needs&&U.tab!=="run")main=viewEmpty();
+  else if(U.tab==="plan")main=viewPlan();
+  else if(U.tab==="checks")main=viewChecks();
+  else if(U.tab==="budget")main=viewBudget();
+  else if(U.tab==="schedule")main=viewSchedule();
+  else if(U.tab==="trace")main=viewTrace();
+  else if(U.tab==="ledger")main=viewLedger();
+  else if(U.tab==="slip")main=viewSlip();
+  else if(U.tab==="export")main=(s?viewExport():viewEmpty());
+  else main=viewRun();
+  const keep=($("upd")||{}).value||"",pk=($("packtext")||{}).value||"";
+  $("app").innerHTML=`<div class="layout">${sideNav()}<main>${U.error&&!s?`<div class="err">${esc(U.error)}</div>`:""}${main}</main>${drawer()}</div>`;
+  if($("upd"))$("upd").value=keep;if($("packtext"))$("packtext").value=pk;
+  if(U.tab==="export"&&s)fetch("/api/export?fmt=txt").then(r=>r.text()).then(t=>{U.exportTxt=t;const p=document.querySelector("main pre");if(p)p.textContent=t}).catch(()=>{})}
+
+/* ---------- actions ---------- */
+function busy(on,msg){U.busy=on;$("loader").classList.toggle("on",on);if(msg)$("loadmsg").textContent=msg}
+async function runText(text){if(!text.trim()){U.error="Paste or choose some messages first.";render();return}
+  U.error="";busy(true,"Reading + planning...");
+  try{const r=await api("/api/run",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text})});
+    if(!r.json||!r.json.ok){U.error=(r.json&&r.json.error)||"Run failed";}
+    else if(r.json.noop){U.error="Nothing new: every message in that text is already in the ledger."}
+    await load();if(r.json&&r.json.ok&&!r.json.noop&&r.json.mode==="update"){}
+  }catch(e){U.error="Could not reach the server: "+e}finally{busy(false);render()}}
+function copy(t){if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(t);const a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy")}catch(e){}a.remove();return Promise.resolve()}
+function showMsg(id){const e=((S()||{}).ledger||[]).find(x=>x.id==id);if(!e)return;
+  let t=e.text,parts=[],marks=[];
+  (e.claims||[]).forEach(c=>(c.ev||"").split("|").forEach(seg=>{seg=seg.trim().replace(/[.]$/,"");if(seg){const i=t.toLowerCase().indexOf(seg.toLowerCase());if(i>=0)marks.push([i,i+seg.length])}}));
+  marks.sort((a,b)=>a[0]-b[0]);let pos=0,out="";marks.forEach(([a,b])=>{if(a>=pos){out+=esc(t.slice(pos,a))+"<mark>"+esc(t.slice(a,b))+"</mark>";pos=b}});out+=esc(t.slice(pos));
+  $("modalbox").innerHTML=`<div class="row" style="justify-content:space-between"><h2>Message ${e.id}</h2><button class="btn sm ghost" data-act="close">Close</button></div><p><b>${esc(e.sender||"?")}</b> · ${esc(e.date||"no date")} <span class="badge b-${e.status}">${e.status}</span></p><p style="white-space:pre-wrap;border:2px solid #111;border-radius:8px;padding:10px;background:#fffef2">${out}</p><p>${esc(e.reason)}</p>${(e.claims||[]).length?`<table><tr><th>Claim</th><th>Value</th><th>State</th></tr>${e.claims.map(c=>`<tr><td>${esc(c.metric||c.attr)}${c.subj?" ["+esc(c.subj)+"]":""}</td><td>${esc(val(c.val))}</td><td>${esc(c.st||"")}${c.by?" -> msg "+c.by:""}</td></tr>`).join("")}</table>`:""}`;
+  $("modal").classList.add("on")}
+function printSlip(id){const s=(D.slips||[]).find(x=>x.id==id);if(!s)return;
+  $("printslip").innerHTML=`<h1 style="font-size:26px">MTM Planner - Prediction Slip #${s.id}</h1><p>Mind to Machine Hackathon</p><hr><p><b>Locked at:</b> ${esc(s.locked_at)}</p><p><b>Areas expected to make model calls:</b></p><ul>${AREAS.map(a=>`<li>${s.areas.includes(a)?"&#9746;":"&#9744;"} ${a}</li>`).join("")}</ul>${s.status==="resolved"?`<p><b>Actual (run ${s.run_id}):</b> ${esc(s.actual.join(", ")||"none")} - <b>${s.match?"MATCH":"MISMATCH"}</b></p>`:"<p><i>Not yet resolved by a run.</i></p>"}<br><p>Team: ______________________ &nbsp; Volunteer: ______________________</p>`;
+  window.print()}
+
+document.addEventListener("click",async ev=>{const t=ev.target.closest("[data-tab],[data-act],[data-msg],[data-filter],[data-run],[data-print]");
+  if(ev.target.id==="modal"){$("modal").classList.remove("on");return}
+  if(!t)return;const d=t.dataset;
+  if(d.tab){U.tab=d.tab;location.hash="tab="+d.tab;render();window.scrollTo({top:0,behavior:"smooth"});return}
+  if(d.msg){showMsg(d.msg);return}
+  if(d.filter){U.filter=d.filter;render();return}
+  if(d.run){U.run=+d.run;render();return}
+  if(d.print){printSlip(d.print);return}
+  const a=d.act;
+  if(a==="close")$("modal").classList.remove("on");
+  else if(a==="hero"){U.hero=!U.hero;render()}
+  else if(a==="update")runText($("upd").value);
+  else if(a==="runpack")runText($("packtext").value);
+  else if(a==="reset"){if(confirm("Delete the saved plan, ledger, traces and slips?")){busy(true,"Resetting...");await api("/api/reset",{method:"POST"});U.error="";U.run=null;await load();busy(false);render()}}
+  else if(a==="lock"){const areas=[...document.querySelectorAll(".slipchk:checked")].map(x=>x.value);const r=await api("/api/slip",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({areas})});if(!r.json.ok)U.error=r.json.error;await load()}
+  else if(a==="copytrace"){const runs=S().runs;copy(runs[(U.run||runs.length)-1].trace.text);t.textContent="Copied!";setTimeout(()=>{t.textContent="Copy trace"},1100)}
+  else if(a==="copyexport"){copy(U.exportTxt);t.textContent="Copied!"}
+});
+document.addEventListener("change",ev=>{if(ev.target.id==="packfile"){const f=ev.target.files[0];if(f){const r=new FileReader();r.onload=()=>{$("packtext").value=r.result};r.readAsText(f)}}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")$("modal").classList.remove("on")});
+window.addEventListener("hashchange",()=>{const m=location.hash.match(/tab=(\w+)/);if(m){U.tab=m[1];render()}});
+boot();
+</script>
+</body>
+</html>

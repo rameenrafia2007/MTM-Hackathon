@@ -1,0 +1,15 @@
+ui/branding.json controls the DECORATIVE branding of the web UI only.
+It never reaches the engine, the prompts, the plan figures or any totals.
+
+{
+  "event_name": "Mind to Machine Hackathon",
+  "organizers": [ { "name": "...", "logo": "assets/your-organizer-logo.png" } ],
+  "sponsors":   [ { "name": "...", "role": "Gold sponsor", "logo": "assets/sponsor.png", "url": "https://..." } ]
+}
+
+* organizers: the names above are the ones printed on the participant badge. Edit them if wrong.
+  "logo" is optional; when empty (or the file is missing) the UI shows the name as text.
+* sponsors: SHIPPED EMPTY ON PURPOSE. Add the real sponsors the organizers give you
+  (name, role, optional logo file in ui/assets/, optional url). Never invent sponsor names.
+  While the list is empty the "Powered by" strip is hidden.
+* Logo files go in ui/assets/ (see ui/assets/README.txt). Commit them; they are not git-ignored.

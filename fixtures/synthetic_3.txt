@@ -1,0 +1,29 @@
+Message 1
+From: Director's office, email
+Date: 10 Jan
+Message: Go ahead with a 6-hour event for 200 students, teams of 5. Budget is Rs 1,200,000. 12 staff. Keep a 15-minute prayer break. Zuhr prayer is fixed at 13:00 for 30 minutes. The event starts at 09:00. Reserve 10% of the budget as contingency.
+
+Message 2
+From: City Hall Booking, email
+Date: 5 Jan
+Message: Hall North seats 250 at Rs 200,000. Hall South seats 250 at Rs 230,000. The Dome seats 400 at Rs 350,000.
+
+Message 3
+From: City Hall Booking, email
+Date: 8 Jan
+Message: Sorry, Hall North is no longer available on that date.
+
+Message 4
+From: Food Court Caterers, email
+Date: 9 Jan
+Message: Standard meal Rs 1,100 per head. Deluxe meal Rs 1,800 per head.
+
+Message 5
+From: Judging committee head, email
+Date: 9 Jan
+Message: 12 judges are confirmed at Rs 6,000 each. 15 minutes per team, maximum 4 teams per judge.
+
+Message 6
+From: Finance, email
+Date: 9 Jan
+Message: Already committed: prizes Rs 150,000.
